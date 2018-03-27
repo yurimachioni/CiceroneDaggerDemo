@@ -5,8 +5,8 @@ This type of flow is particularly tricky to implement on Android, so these libra
 
 Links:
 
-Text with a better explanation:
-(the code is also excessively commented)
+Text with a better explanation: https://medium.com/@yurimachioni/creating-an-instagram-like-flow-using-cicerone-and-dagger2-bottomnavigation-with-fragments-777771ff4401
+(the code is also heavily commented)
 
 Cicerone: https://github.com/terrakok/Cicerone 
 Dagger2: https://github.com/google/dagger
