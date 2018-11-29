@@ -21,6 +21,10 @@ class FlowModule(val fragmentActivity: FragmentActivity, val fm: FragmentManager
     @PerFlow
     fun provideNavigator(): FlowNavigator = FlowNavigator(fragmentActivity, fm, containerId)
 
+    @Provides
+    @PerFlow
+    fun provideCustomRouter(cicerone: Cicerone<Router>): Router = cicerone.router
+
     //This is where we could provide objects to be shared inside a tab, like use cases, datasources and repositories, if it makes sense.
     //They would be lazily initialized with each tab.
 }
@@ -30,6 +34,6 @@ class FlowModule(val fragmentActivity: FragmentActivity, val fm: FragmentManager
 interface FlowComponent : ApplicationComponent {
     fun inject(tabNavigationFragment: TabNavigationFragment)
     fun provideCicerone(): Cicerone<Router>
-
+    fun router(): Router
 }
 

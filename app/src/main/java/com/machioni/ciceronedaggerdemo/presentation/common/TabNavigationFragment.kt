@@ -3,6 +3,7 @@ package com.machioni.ciceronedaggerdemo.presentation.common
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,8 @@ sealed class TabNavigationFragment : Fragment(), BackButtonListener {
 
     @Inject
     lateinit var navigator: FlowNavigator
+
+    abstract val navigationKey: String
 
     //all the sceneComponents will depend on this component. it allows the same instance of cicerone
     //to be injected in all the scenes of a flow, which allows a different backstack per tab.
@@ -56,36 +59,35 @@ sealed class TabNavigationFragment : Fragment(), BackButtonListener {
 
     //sends backPressed events from Main Activity to child fragments
     override fun onBackPressed(): Boolean {
-        val childFragment = childFragmentManager.findFragmentById(R.id.sceneContainer)
-        return if (childFragment != null && childFragment is BackButtonListener && childFragment.onBackPressed()) {
-            true
-        } else {
-            if (isAdded)
-                activity?.finish()
-            true
-        }
+        return if(isAdded) {
+            val childFragment = childFragmentManager.findFragmentById(R.id.sceneContainer)
+            childFragment != null && childFragment is BackButtonListener && childFragment.onBackPressed()
+        } else false
     }
 }
 
 //these subclasses are optional. they allow for easier management of each tab, defining each one`s
 //first child fragment on possibly other unique behaviours per tab
 class HomeTabFragment : TabNavigationFragment() {
+    override val navigationKey: String = NavigationKeys.HOME_TAB_FRAGMENT
+
     companion object {
-        val className: String = HomeTabFragment::class.java.simpleName
         fun newInstance(bundle: Bundle? = null) = HomeTabFragment().apply { arguments = bundle }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        if (childFragmentManager.findFragmentById(R.id.sceneContainer) == null)
-            cicerone.router.replaceScreen(ContentFragment.className, 1)
+        if (childFragmentManager.findFragmentById(R.id.sceneContainer) == null) {
+            cicerone.router.replaceScreen(NavigationKeys.CONTENT_FRAGMENT, 1)
+        }
     }
 }
 
 class DashboardTabFragment : TabNavigationFragment() {
+    override val navigationKey: String = NavigationKeys.DASHBOARD_TAB_FRAGMENT
+
     companion object {
-        val className: String = DashboardTabFragment::class.java.simpleName
         fun newInstance(bundle: Bundle? = null) = DashboardTabFragment().apply { arguments = bundle }
     }
 
@@ -93,13 +95,14 @@ class DashboardTabFragment : TabNavigationFragment() {
         super.onActivityCreated(savedInstanceState)
 
         if (childFragmentManager.findFragmentById(R.id.sceneContainer) == null)
-            cicerone.router.replaceScreen(ContentFragment.className, 1)
+            cicerone.router.replaceScreen(NavigationKeys.CONTENT_FRAGMENT, 1)
     }
 }
 
 class NotificationsTabFragment : TabNavigationFragment() {
+    override val navigationKey: String = NavigationKeys.NOTIFICATIONS_TAB_FRAGMENT
+
     companion object {
-        val className: String = NotificationsTabFragment::class.java.simpleName
         fun newInstance(bundle: Bundle? = null) = NotificationsTabFragment().apply { arguments = bundle }
     }
 
@@ -107,6 +110,6 @@ class NotificationsTabFragment : TabNavigationFragment() {
         super.onActivityCreated(savedInstanceState)
 
         if (childFragmentManager.findFragmentById(R.id.sceneContainer) == null)
-            cicerone.router.replaceScreen(ContentFragment.className, 1)
+            cicerone.router.replaceScreen(NavigationKeys.CONTENT_FRAGMENT, 1)
     }
 }

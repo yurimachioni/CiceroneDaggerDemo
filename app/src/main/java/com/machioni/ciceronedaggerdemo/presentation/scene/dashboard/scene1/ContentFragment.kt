@@ -3,12 +3,14 @@ package com.machioni.ciceronedaggerdemo.presentation.scene.dashboard.scene1
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.machioni.ciceronedaggerdemo.R
 import com.machioni.ciceronedaggerdemo.presentation.common.BackButtonListener
+import com.machioni.ciceronedaggerdemo.presentation.common.NavigationKeys
 import com.machioni.ciceronedaggerdemo.presentation.common.TabNavigationFragment
 import kotlinx.android.synthetic.main.fragment_content.*
 import ru.terrakok.cicerone.Cicerone
@@ -22,8 +24,9 @@ class ContentFragment : Fragment(), ContentView, BackButtonListener {
     lateinit var contentPresenter: ContentPresenter
 
     @Inject
-    lateinit var cicerone: Cicerone<Router>
+    lateinit var router: Router
 
+    val DEPTH_KEY = "depth"
     var depth: Int = 0
 
     //creates the SceneComponent using the FlowComponent from the parent fragment(TabNavigationFragment)
@@ -40,8 +43,9 @@ class ContentFragment : Fragment(), ContentView, BackButtonListener {
     }
 
     companion object {
-        fun newInstance(depth: Int?): ContentFragment = ContentFragment().apply { depth?.let{this.depth = it }}
-        val className : String = ContentFragment::class.java.simpleName
+        fun newInstance(depth: Int): ContentFragment = ContentFragment().apply {
+            arguments = Bundle().apply { putInt(DEPTH_KEY, depth) }
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -57,17 +61,19 @@ class ContentFragment : Fragment(), ContentView, BackButtonListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        arguments?.let{ depth = it.getInt(DEPTH_KEY)}
+
         button.text = "we need to go deeper ($depth)"
         button.setOnClickListener { contentPresenter.onButtonClicked() }
     }
 
     override fun navigateDeeper() {
-        cicerone.router.navigateTo(ContentFragment.className, depth + 1)
+        router.navigateTo(NavigationKeys.CONTENT_FRAGMENT, depth + 1)
     }
 
     override fun onBackPressed(): Boolean {
         Toast.makeText(context, "backPressed $depth", Toast.LENGTH_SHORT).show()
-        cicerone.router.exit()
+        router.exit()
 
         return true
     }

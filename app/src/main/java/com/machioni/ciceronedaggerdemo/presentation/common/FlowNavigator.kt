@@ -27,7 +27,7 @@ class FlowNavigator @Inject constructor(fragmentActivity: FragmentActivity, fm: 
 
     override fun createFragment(screenKey: String, data: Any?): Fragment? {
         return when (screenKey) {
-            ContentFragment.className -> {
+            NavigationKeys.CONTENT_FRAGMENT -> {
                 if (data is Int) {
                     return ContentFragment.newInstance(data)
                 } else {
